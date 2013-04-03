@@ -1,0 +1,248 @@
+Rectangle{
+             anchors.fill:parent
+             anchors.topMargin:units.gu(2)
+             gradient: Gradient {
+                 GradientStop {
+                     position: 0.00;
+                     color: "#ededf0";
+                 }
+                 GradientStop {
+                     position: 1.00;
+                     color: "#ffffff";
+                 }
+             }
+            Column {
+                spacing:units.gu(2)
+                anchors.fill: parent
+              Row {
+                  width:parent.width
+                  anchors.horizontalCenter: parent.horizontalCenter
+                Column {
+                    width:parent.width/2
+                    Text{
+                        id:unitsString
+                        anchors.left: parent.left
+                        anchors.margins: units.gu(1)
+                        property bool metric:true
+                        color: "#555"
+                        text:i18n.tr("Units - Metric")
+                        font.pointSize: units.gu(1.6)
+                    }
+                }
+                Column{
+                    width:parent.width/2
+                        Button{
+                            id:unitsSwitch
+                            text:i18n.tr("Change")
+                            width:units.gu(16)
+                            anchors.right: parent.right
+                            anchors.margins: units.gu(1)
+                            onClicked:{
+                                unitsString.text=(unitsString.metric)?i18n.tr("Units - Imperial"):i18n.tr("Units - Metric");
+                                unitsString.metric=!unitsString.metric;
+                                var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+                                  db.transaction(
+                                              function(tx) {
+                                                  tx.executeSql('UPDATE Settings SET value='+((unitsString.metric)?1:0)+' WHERE NAME=\'units\'');
+                                                        }
+                                                  )
+                                }
+                        }
+                    }
+                }
+
+               Row {
+                   anchors.horizontalCenter: parent.horizontalCenter
+                   width:parent.width
+                   Column {
+                       width:parent.width/2
+                       Text {
+                           text:"WOEID"
+                            verticalAlignment: Text.AlignVCenter
+                            color: "#555"
+                           font.pointSize: units.gu(1.6)
+                           anchors.left: parent.left
+                           anchors.margins: units.gu(1)
+                       }
+                   }
+                    Column{
+                        width:parent.width/2
+                       TextField {
+                           id:woeid
+                           text:"850357"
+                           font.pointSize:units.gu(1.6)
+                           height:units.gu(3.6)
+                           width:units.gu(16)
+                           anchors.right: parent.right
+                           anchors.margins: units.gu(1)
+                       }
+                    }
+                }
+
+               Row {
+                   anchors.horizontalCenter: parent.horizontalCenter
+                   width:parent.width
+                   Column {
+                       width:parent.width/4
+                       Text {
+                           text:"Weight (kg)"
+                            verticalAlignment: Text.AlignVCenter
+                            color: "#555"
+                           font.pointSize: units.gu(1.6)
+                           anchors.left: parent.left
+                           anchors.margins: units.gu(1)
+                       }
+                   }
+                    Column{
+                        width:parent.width*3/4
+
+                        Slider {
+                            id:weightSlider
+                            anchors.right: parent.right
+                            anchors.margins: units.gu(1)
+                            minimumValue:30
+                            maximumValue:200
+                            width:units.gu(26)
+                            live:true
+
+                            //Here's onClicked event which doesn't fire if slider is dragged. Need to change this!
+
+                            onClicked:{
+                                console.log('UPDATE Settings SET value='+(weightSlider.value.toFixed(0))+' WHERE NAME=\'weight\'')
+                                var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+                                  db.transaction(
+                                              function(tx) {
+                                                  tx.executeSql('UPDATE Settings SET value='+(weightSlider.value.toFixed(0))+' WHERE NAME=\'weight\'');
+                                                        }
+                                                  )
+                                }
+                            }
+                        }
+
+                    }
+
+               Row {
+                   id:sportRow
+                   anchors.horizontalCenter: parent.horizontalCenter
+                   width:parent.width
+                   Column {
+                       width:parent.width/2
+                       Text {
+                           id:sport
+                           text:"Sport"
+                            verticalAlignment: Text.AlignVCenter
+                            color: "#555"
+                           font.pointSize: units.gu(1.6)
+                           anchors.left: parent.left
+                           anchors.margins: units.gu(1)
+                       }
+                   }
+                    Column{
+                        width:parent.width/2
+                        Button{
+                            id:sportPopoverButton
+                            width:units.gu(26)
+                            anchors.right: parent.right
+                            anchors.margins: units.gu(1)
+                            onClicked:{
+                                PopupUtils.open(sportPopoverLauncher, sportPopoverButton)
+                                }
+                        }
+
+                        Component {
+                            id:sportPopoverLauncher
+
+                        Popover {
+                            id:sportPopover
+                            Column {
+                                anchors {
+                                            left: parent.left
+                                            top: parent.top
+                                            right: parent.right
+                                        }
+                                        ListItem.Standard {
+                                            text:"Mountain Biking"
+                                            icon:Image {
+                                                width:units.gu(6)
+                                                anchors.leftMargin: units.gu(1)
+                                                anchors.rightMargin: units.gu(2)
+                                                fillMode: Image.PreserveAspectFit
+                                                source:"icons/mtb.png"
+                                            }
+
+                                            onClicked: {
+                                                sportPopoverButton.text = "Mountain Biking"
+                                                PopupUtils.close(sportPopover)
+                                                var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+                                                  db.transaction(
+                                                              function(tx) {
+                                                                  tx.executeSql('UPDATE Settings SET value=0 WHERE NAME=\'sport\'');
+                                                                        }
+                                                                  )
+                                            }
+                                        }
+                                        ListItem.Standard {
+                                            text:"Cycling"
+                                            icon:Image {
+                                                width:units.gu(6)
+                                                anchors.leftMargin: units.gu(1)
+                                                anchors.rightMargin: units.gu(2)
+                                                fillMode: Image.PreserveAspectFit
+                                                source:"icons/cycling.png"
+                                            }
+                                            onClicked: {
+                                                sportPopoverButton.text = "Cycling"
+                                                PopupUtils.close(sportPopover)
+                                                var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+                                                  db.transaction(
+                                                              function(tx) {
+                                                                  tx.executeSql('UPDATE Settings SET value=1 WHERE NAME=\'sport\'');
+                                                                        }
+                                                                  )
+                                            }
+                                        }
+                                        ListItem.Standard {
+                                            text:"Running"
+                                            icon:Image {
+                                                width:units.gu(6)
+                                                anchors.leftMargin: units.gu(1)
+                                                anchors.rightMargin: units.gu(2)
+                                                fillMode: Image.PreserveAspectFit
+                                                source:"icons/running.png"
+                                            }
+                                            onClicked: {
+                                                sportPopoverButton.text = "Running"
+                                                PopupUtils.close(sportPopover)
+                                                var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+                                                  db.transaction(
+                                                              function(tx) {
+                                                                  tx.executeSql('UPDATE Settings SET value=2 WHERE NAME=\'sport\'');
+                                                                        }
+                                                                  )
+                                            }
+                                        }
+                                        ListItem.Standard {
+                                            text:"Walking"
+                                            icon:Image {
+                                                width:units.gu(6)
+                                                anchors.leftMargin: units.gu(1)
+                                                anchors.rightMargin: units.gu(2)
+                                                fillMode: Image.PreserveAspectFit
+                                                source:"icons/walking.png"
+                                            }
+                                            onClicked: {
+                                                sportPopoverButton.text = "Walking"
+                                                PopupUtils.close(sportPopover)
+                                                var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+                                                  db.transaction(
+                                                              function(tx) {
+                                                                  tx.executeSql('UPDATE Settings SET value=3 WHERE NAME=\'sport\'');
+                                                                        }
+                                                                  )
+                                            }
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }

@@ -1,0 +1,65 @@
+TO-DO
+
+- Reset Workout tab after saving workout - DONE
+- Store GPS data - DONE
+- In History tab, add Total distance and Total Duration
+- Save settings (DB table name:value)
+- Convert Metric-Imperial
+- Register Yahoo, WOEID
+- Calories count
+- Add sport - Walking
+- Remove dummy functionality
+- GMaps photo fetch
+- Fix weight slider
+
++ current altitude
++ current sport (icon)
++ app icon (favicon)
++ export GPX
++ import GPX
++ Hide Overview if possible
+
+++ desktop layout
+++ packaging
+++ installation
+++ source control
+
+++? Endomondo import
+++? ANT, Bluetooth HRM support
+++? Facebook, Twitter, G+ share
+
+WORKOUT TABLE
+	- distance
+	- duration
+	- max-speed
+	- weather
+	- calories
+	- max-altitude
+	- min-altitude
+	- ascent
+	- descent
+	- date
+
+GPS DATA TABLE
+	- Workout ID
+	- latitude
+	- longitude
+	- altitude
+	- timestamp
+
+CALORIES WALKING
+
+	Calorie consumption in kcal = 0.8 kcal * 75 kg * 5 km 
+
+CALORIES RUNNING
+
+	CAL = 0.75 * WEIGHT (lbs) * DISTANCE (miles) // WEIGHT (kg) * DISTANCE (km)
+
+
+CALORIES MTB
+
+    If you weigh roughly 130 pounds: 502 calories burned mountain biking per hour
+    If you weigh roughly 155 pounds: 598 calories burned per hour
+    If you weigh roughly 180 pounds: 695 calories burned per hour
+    If you weigh roughly 205 pounds: 791 calories burned per hour
+
