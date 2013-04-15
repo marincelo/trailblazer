@@ -12,7 +12,6 @@ MainView {
     id:root
     width: units.gu(45)
     height: units.gu(80)
-    //tools:overview.tools
 
     Tabs {
      ItemStyle.class:"new-tabs"
@@ -36,281 +35,184 @@ MainView {
                     color: "#ffffff";
                 }
             }
+
             Column {
                 anchors.fill: parent
                 height: parent.height-units.gu(10)
                 spacing:units.gu(3)
                 Row{
-                    spacing:units.gu(1)
                     anchors.horizontalCenter: parent.horizontalCenter
-                        Column {
-                            UbuntuShape{
-                                color: "lightblue"
-                                radius: "small"
-                                width:units.gu(20)
-                                height:units.gu(10)
-//                                Image {
-//                                    anchors.verticalCenter: parent.verticalCenter
-//                                    anchors.left: parent.left
-//                                    anchors.leftMargin: units.gu(1)
-//                                    anchors.rightMargin: units.gu(4)
-//                                    fillMode: Image.PreserveAspectFit
-//                                    source:"icons/distance.png"
-//                                    width:units.gu(4)
-//                                }
-
-                                Text{
-                                    id:distance
-                                    property real dist:0.0
-                                    anchors.fill:parent
-                                    color: "#333"
-                                    text:distance.dist.toFixed(2)+" km"
-                                    font.family: "Ubuntu"
-                                    style: Text.Raised
-                                    styleColor: "#aaa"
-                                    font.pointSize: units.gu(2.2)
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-
-                                }
-                            }
-                    Column {
-                                UbuntuShape{
-                                    color: "lightblue"
-                                    radius: "small"
-                                    width:units.gu(20)
-                                    height:units.gu(10)
-//                                    Image {
-//                                        anchors.verticalCenter: parent.verticalCenter
-//                                        anchors.left: parent.left
-//                                        anchors.leftMargin: units.gu(1)
-//                                        anchors.rightMargin: units.gu(4)
-//                                        fillMode: Image.PreserveAspectFit
-//                                        source:"icons/duration.png"
-//                                        width:units.gu(4)
-//                                    }
-                                    Text{
-                                        id:duration
-                                        property real time:0.0
-                                        anchors.fill:parent
-                                        color: "#333"
-                                        text:parseInt(time/3600)+":"+parseInt((time/60)%6)+parseInt((time/60)%10) +":"+parseInt((time/10)%6)+""+(time%10).toFixed(0)
-                                        font.family: "Ubuntu"
-                                        style: Text.Raised
-                                        styleColor: "#aaa"
-                                        font.pointSize: units.gu(2.2)
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-
-                            }
-                                    Timer{
-                                        id:durationTimer
-                                        interval:1000
-                                        triggeredOnStart: true
-                                        repeat:true
-                                        onTriggered: {
-                                            duration.time++
-                                            //distance.dist+=Math.random(1)/100 // replace with distance between 2 GPS points
-                                            averageSpeed.text="Avg Speed "+(distance.dist/(duration.time/3600)).toFixed(1)+" km/h"
-                                        }
-                                    }
+                    Timer{
+                        id:durationTimer
+                        interval:1000
+                        triggeredOnStart: true
+                        repeat:true
+                        onTriggered: {
+                            mainCircle.time++
+                        }
                     }
-                }
-            }
 
-                Row{
-                    spacing:units.gu(1)
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Column {
-                            UbuntuShape{
-                                color: "lightblue"
-                                radius: "small"
-                                width:units.gu(20)
-                                height:units.gu(8)
-//                                Image {
-//                                    anchors.verticalCenter: parent.verticalCenter
-//                                    anchors.left: parent.left
-//                                    anchors.leftMargin: units.gu(2)
-//                                    anchors.rightMargin: units.gu(2)
-//                                    fillMode: Image.PreserveAspectFit
-//                                    source:"icons/Layer 1.svg"
-//                                    width:units.gu(8)
-//                                }
-                                Text{
-                                    id:averageSpeed
-                                    anchors.fill:parent
-                                    color: "#333"
-                                    text:"0 km/h"
-                                    font.family: "Ubuntu"
-                                    style: Text.Raised
-                                    styleColor: "#aaa"
-                                    font.pointSize: units.gu(1.6)
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
+                    Rectangle {
+
+//                        Image {
+//                            id:backgroundImage
+//                            source:"icons/circle.svg"
+//                            width:(workout.width-units.gu(3))
+//                            height:width
+//                        }
+
+                        id:mainCircle
+                        property real dist:0.0
+                        property real time:0.0
+                        width:(workout.width-units.gu(4))
+                        height:width
+                        color: "#eee"
+                        radius: width/2
+                        border.width: units.gu(1)
+                        border.color: "lightblue"
+                        smooth:true
+                        opacity:1
+                        state:"default"
+
+                        states:State {
+                            name:"hidden"
+                            PropertyChanges { target: mainCircle; opacity:0 }
+                            PropertyChanges { target: mainCircle; visible:false }
+                        }
+
+                        transitions: [
+                            Transition {
+                                   from: "default"; to: "hidden"; reversible: true
+                                   PropertyAnimation { target: mainCircle; properties: "opacity"; duration: 400; easing.type: Easing.OutCirc }
+                               },
+                            Transition {
+                                   from: "hidden"; to: "default"; reversible: true
+                                   PropertyAnimation { target: mainCircle; properties: "opacity"; duration: 400; easing.type: Easing.InCirc }
+                               }]
+
+                        MouseArea {
+                            id:mainMouseArea
+                            anchors.fill:parent
+                            onClicked:{
+                                mainCircle.state = "hidden"
+                                altCircle.state = "visible"
+                            }
+                        }
+
+                            Text {
+                                anchors.bottom:centerText.top
+                                anchors.bottomMargin: units.gu(2)
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text:mainCircle.dist.toFixed(2)+" km"
+                                color:"#dd4814"
+                                font.family: "Ubuntu Light"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pointSize: units.gu(3)
+                            }
+
+                            Text{
+                                id:centerText
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                                text:parseInt(mainCircle.time/3600)+":"+parseInt((mainCircle.time/60)%6)+parseInt((mainCircle.time/60)%10) +":"+parseInt((mainCircle.time/10)%6)+""+(mainCircle.time%10).toFixed(0)
+                                color:"#dd4814"
+                                font.family: "Ubuntu Light"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pointSize: units.gu(6)
+
+                            }
+
+                            Text {
+                                id:caloriesBurnt
+                                anchors.top:centerText.bottom
+                                anchors.topMargin: units.gu(2)
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text:Trailblazer.countCalories()
+                                color:"#dd4814"
+                                font.family: "Ubuntu Light"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pointSize: units.gu(3)
                             }
                     }
-                    Column {
-                                UbuntuShape{
-                                    color: "lightblue"
-                                    radius: "small"
-                                    width:units.gu(20)
-                                    height:units.gu(8)
-//                                    Image {
-//                                        anchors.verticalCenter: parent.verticalCenter
-//                                        anchors.left: parent.left
-//                                        anchors.leftMargin: units.gu(2)
-//                                        anchors.rightMargin: units.gu(2)
-//                                        fillMode: Image.PreserveAspectFit
-//                                        source:"icons/distance.png"
-//                                        width:units.gu(4)
-//                                    }
-                                    Text{
-                                        id:calories
-                                        anchors.fill:parent
-                                        color: "#333"
-                                        text:Trailblazer.countCalories()
-                                        font.family: "Ubuntu"
-                                        style: Text.Raised
-                                        styleColor: "#aaa"
-                                        font.pointSize: units.gu(1.6)
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
+
+                    Rectangle {
+                        id:altCircle
+                        width:(workout.width-units.gu(4))
+                        height:width
+                        color: "#eee"
+                        radius: width/2
+                        border.width: units.gu(1)
+                        border.color: "lightblue"
+                        smooth:true
+                        visible:false
+                        opacity:0
+                        state:"default"
+
+                        states:State {
+                            name:"visible"
+                            PropertyChanges { target: altCircle; opacity:1}
+                            PropertyChanges { target: altCircle; visible:true}
+                        }
+
+                        transitions: [
+                            Transition {
+                                   from: "default"; to: "visible"; reversible:true
+                                   PropertyAnimation { target: altCircle; properties: "opacity"; duration: 400; easing.type: Easing.InCirc }
+                               },
+                            Transition {
+                                   from: "visible"; to: "default"; reversible:true
+                                   PropertyAnimation { target: altCircle; properties: "opacity"; duration: 400; easing.type: Easing.OutCirc }
+                               }]
+
+                        MouseArea {
+                            anchors.fill:parent
+                            onClicked:{
+                                altCircle.state = "default"
+                                mainCircle.state = "default"
+                            }
+                        }
+
+                            Text {
+                                id:maxSpeed
+                                anchors.bottom:altCenterText.top
+                                anchors.bottomMargin: units.gu(2)
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text:"Max spd & alt"
+                                color:"#dd4814"
+                                font.family: "Ubuntu Light"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pointSize: units.gu(3)
+                            }
+
+                            Text{
+                                id:altCenterText
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                                text:(mainCircle.distance>0)?(mainCircle.distance/(mainCircle.duration/3600)).toFixed(2) + " km/h":"0 km/h"
+                                color:"#dd4814"
+                                font.family: "Ubuntu Light"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pointSize: units.gu(6)
 
                             }
-                    }
-                }
-            }
 
-                Row{
-                    spacing:units.gu(1)
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Column {
-                            UbuntuShape{
-                                color: "lightblue"
-                                radius: "small"
-                                width:units.gu(20)
-                                height:units.gu(8)
-//                                Image {
-//                                    anchors.verticalCenter: parent.verticalCenter
-//                                    anchors.left: parent.left
-//                                    anchors.leftMargin: units.gu(2)
-//                                    anchors.rightMargin: units.gu(2)
-//                                    fillMode: Image.PreserveAspectFit
-//                                    source:"icons/maxspeed.png"
-//                                    width:units.gu(4)
-//                                }
-                                Text{
-                                    id:maxSpeed
-                                    anchors.fill:parent
-                                    color: "#333"
-                                    text:"Max Speed"
-                                    font.family: "Ubuntu"
-                                    style: Text.Raised
-                                    styleColor: "#aaa"
-                                    font.pointSize: units.gu(1.6)
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
+                            Text {
+                                anchors.top:altCenterText.bottom
+                                anchors.topMargin: units.gu(2)
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text:"Ascent/Descent"
+                                color:"#dd4814"
+                                font.family: "Ubuntu Light"
+                                verticalAlignment: Text.AlignVCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                font.pointSize: units.gu(3)
                             }
                     }
-                    Column {
-                                UbuntuShape{
-                                    color: "lightblue"
-                                    radius: "small"
-                                    width:units.gu(20)
-                                    height:units.gu(8)
-//                                    Image {
-//                                        anchors.verticalCenter: parent.verticalCenter
-//                                        anchors.left: parent.left
-//                                        anchors.leftMargin: units.gu(2)
-//                                        anchors.rightMargin: units.gu(2)
-//                                        fillMode: Image.PreserveAspectFit
-//                                        source:"icons/speed.png"
-//                                        width:units.gu(4)
-//                                    }
-                                    Text{
-                                        id:currentSpeed
-                                        anchors.fill:parent
-                                        color: "#333"
-                                        text:"Current Speed"
-                                        font.family: "Ubuntu"
-                                        style: Text.Raised
-                                        styleColor: "#aaa"
-                                        font.pointSize: units.gu(1.6)
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-
-                            }
-                    }
-                }
-
-            }
-
-                Row{
-                    spacing:units.gu(1)
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    visible:sportPopoverButton.text==="Mountain Biking"
-                    Column {
-                            UbuntuShape{
-                                color: "lightblue"
-                                radius: "small"
-                                width:units.gu(20)
-                                height:units.gu(8)
-//                                Image {
-//                                    anchors.verticalCenter: parent.verticalCenter
-//                                    anchors.left: parent.left
-//                                    anchors.leftMargin: units.gu(2)
-//                                    anchors.rightMargin: units.gu(2)
-//                                    fillMode: Image.PreserveAspectFit
-//                                    source:"icons/distance.png"
-//                                    width:units.gu(4)
-//                                }
-                                Text{
-                                    id:maxAltitude
-                                    anchors.fill:parent
-                                    color: "#333"
-                                    text:"Max Altitude"
-                                    font.family: "Ubuntu"
-                                    style: Text.Raised
-                                    styleColor: "#aaa"
-                                    font.pointSize: units.gu(1.6)
-                                    horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                            }
-                    }
-                    Column {
-                                UbuntuShape{
-                                    color: "lightblue"
-                                    radius: "small"
-                                    width:units.gu(20)
-                                    height:units.gu(8)
-//                                    Image {
-//                                        anchors.verticalCenter: parent.verticalCenter
-//                                        anchors.left: parent.left
-//                                        anchors.leftMargin: units.gu(2)
-//                                        anchors.rightMargin: units.gu(2)
-//                                        fillMode: Image.PreserveAspectFit
-//                                        source:"icons/distance.png"
-//                                        width:units.gu(4)
-//                                    }
-                                    Text{
-                                        id:currentAltitude
-                                        anchors.fill:parent
-                                        color: "#333"
-                                        text:"Current Altitude"
-                                        font.family: "Ubuntu"
-                                        style: Text.Raised
-                                        styleColor: "#aaa"
-                                        font.pointSize: units.gu(1.6)
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-
-                            }
-                    }
-                }
 
             }
 
@@ -323,17 +225,15 @@ MainView {
                         //START and PAUSE are merged, onClicked event handles pause and start
                         id:startButton
                         text:"Start"
-                        color: "#5da357"
+                        //color: "#5da357"
+                        color:"lightblue"
                         height:units.gu(8)
                         width:units.gu(18)
                         onClicked:{
                             if(startButton.text==="Start" || startButton.text==="Resume")Workout.start()
                             else Workout.pause()
                         }
-<<<<<<< HEAD
                         iconSource:"icons/playpause.svg"
-=======
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
                     }
 
 
@@ -342,15 +242,12 @@ MainView {
                         id:stopButton
                         enabled:false
                         text:"Finish"
-                        color: "#5da357"
-                        //color: "#DD4814"
+                        //color: "#5da357"
+                        color: "lightblue"
                         height:units.gu(8)
                         width:units.gu(18)
                         onClicked:Workout.finish()
-<<<<<<< HEAD
                         iconSource:"icons/stop.svg"
-=======
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
                     }
                 }
 
@@ -360,7 +257,7 @@ MainView {
                     Column {
                         Button {
                             id:buttonWeather
-                            color:"#ddd"
+                            color:"lightblue"
                             width:units.gu(20)
                             height:units.gu(8)
                             iconSource:"tick/dunno.png"
@@ -371,11 +268,7 @@ MainView {
                                 }
                         }
 
-<<<<<<< HEAD
                         //WEATHER POPOVER
-=======
-                        ////////WEATHER POPOVER
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
 
                         Component{
                             id:weatherPopoverLauncher
@@ -419,52 +312,12 @@ MainView {
                             }
                         }
 
-<<<<<<< HEAD
-=======
-
-
-                        /////////////////////////
-
-//                        UbuntuShape{
-//                            color: "#ddd"
-//                            radius: "small"
-//                            width:units.gu(20)
-//                            height:units.gu(8)
-
-//                                Image{
-//                                    id:weatherImage
-//                                    anchors.left:parent.left
-//                                    anchors.leftMargin: units.gu(1.6)
-//                                    anchors.verticalCenter: parent.verticalCenter
-//                                    source:"tick/dunno.png"
-//                                    fillMode: Image.PreserveAspectFit
-//                                    height: units.gu(5)
-//                                    smooth:true
-//                                    horizontalAlignment: Text.AlignHCenter
-//                                    verticalAlignment: Text.AlignVCenter
-//                                }
-//                            Text{
-//                                id:weatherText
-//                                //anchors.leftMargin: units.gu(3)
-//                                anchors.fill:parent
-//                                color: "#333"
-//                                font.family: "Ubuntu"
-//                                style: Text.Raised
-//                                styleColor: "#aaa"
-//                                font.pointSize: units.gu(1)
-//                                horizontalAlignment: Text.AlignHCenter
-//                                verticalAlignment: Text.AlignVCenter
-//                            }
-
-//                        }
-
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
                     }
 
                     Column {
                         Button{
                             id:"buttonSport"
-                            color: "#ddd"
+                            color: "lightblue"
                             width:units.gu(20)
                             height:units.gu(8)
                             iconSource:switch(sportPopoverButton.text){
@@ -518,19 +371,122 @@ MainView {
              }
 
                 ListView{
+
+                    Image{
+                        id:addWorkout
+                        fillMode: Image.PreserveAspectFit
+                        anchors.right: parent.right
+                        anchors.bottom:parent.bottom
+                        source:"icons/plus.svg"
+                        height:units.gu(4)
+                        width:height
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked:{
+                                PopupUtils.open(addNewLauncher, addWorkout)
+                            }
+
+                            Component {
+                                id:addNewLauncher
+
+                                Popover {
+                                    id:addNew
+                                    Column {
+                                        height:history.height*0.6
+                                        //width:units.gu(10)
+                                        spacing:units.gu(1)
+                                        anchors.margins: units.gu(2)
+                                        anchors{
+                                            top:parent.top
+                                            left:parent.left
+                                            right:parent.right
+                                        }
+                                        Row {
+                                            width:parent.width*0.75
+                                            ListItem.ValueSelector{
+                                                id:addSport
+                                                text:"Sport"
+                                                values:["Mountain Biking", "Cycling", "Running", "Walking"]
+                                            }
+                                        }
+                                        Row {
+                                            width:parent.width*0.75
+                                            TextField {
+                                                id:addDate
+                                                width:parent.width
+                                                placeholderText:"Date"
+                                            }
+                                        }
+                                        Row {
+                                            width:parent.width*0.75
+                                            TextField {
+                                                id:addDistance
+                                                width:parent.width
+                                                placeholderText:"Distance (km)"
+                                            }
+                                        }
+                                        Row {
+                                            width:parent.width*0.75
+                                            TextField {
+                                                id:addDuration
+                                                width:parent.width
+                                                placeholderText:"Duration"
+                                            }
+                                        }
+                                        Row {
+                                            width:parent.width*0.75
+                                            TextField {
+                                                id:addCalories
+                                                width:parent.width
+                                                placeholderText:"Calories burned (optional)"
+                                            }
+                                        }
+                                        Row {
+                                            width:parent.width*0.75
+                                            TextField {
+                                                id:addWeather
+                                                width:parent.width
+                                                placeholderText:"Weather (optional)"
+                                            }
+                                        }
+                                        Row {
+                                            width:parent.width*0.25
+                                            Button {
+                                                width:parent.width
+                                                text:"Add"
+                                                onClicked:{
+                                                    Workout.add(addDate.text, addSport.selectedIndex, addDistance.text,addDuration.text,addCalories.text,addWeather.text)
+                                                    PopupUtils.close(addNew);
+                                                    previousWorkouts.clear();
+                                                    Trailblazer.getHistory();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+
+
+
+
+
                     id:historyList
                     clip:true
                     width:parent.width
                     height:parent.height
                     header:ListItem.MultiValue {
-                        text: history.title
+                        text: "Total "+previousWorkouts.count+" workouts"
                         values:["Distance: "+total.distance.toFixed(2) + " km", "Duration: "+(parseInt(total.duration/3600)+":"+parseInt((total.duration/60)%6)+parseInt((total.duration/60)%10) +":"+parseInt((total.duration/10)%6)+""+(total.duration%10).toFixed(0)) + " " + i18n.tr("hours"), "Calories: "+total.calories + " kcal"]
                     }
                     model:previousWorkouts
 
                     delegate:
                         ListItem.Standard{
-                            text: time + " you passed " + parseFloat(distance).toFixed(2) + " km " + i18n.tr("in") + " "+(parseInt(duration/3600)+":"+parseInt((duration/60)%6)+parseInt((duration/60)%10) +":"+parseInt((duration/10)%6)+""+(duration%10).toFixed(0)) + " " + i18n.tr("hours")
+                            text: parseFloat(distance).toFixed(2) + " km | "+(parseInt(duration/3600)+":"+parseInt((duration/60)%6)+parseInt((duration/60)%10) +":"+parseInt((duration/10)%6)+""+(duration%10).toFixed(0)) + " " + i18n.tr("hours") + " | " + calories
                             icon:Image {
                                 fillMode: Image.PreserveAspectFit
                                 source:switch(sport){
@@ -616,19 +572,14 @@ MainView {
                                              right: parent.right
                                              top: parent.top
                                          }
-<<<<<<< HEAD
                                          height: overview.height
                                          width:overview.width
-=======
-                                         height: units.gu(30)
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
 
                                          contentHeight: image.sourceSize.height
                                          contentWidth: image.sourceSize.width
                                          clip: true
                                          Image {
                                              id: image
-<<<<<<< HEAD
                                              source: mapImage.source
                                              MouseArea {
                                                  id:imageFullscreenClose
@@ -645,15 +596,11 @@ MainView {
                                                 }
                                              }
 
-=======
-                                             source: "staticmap.png"
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
                                          }
                                      }
                                  }
                              }
 
-<<<<<<< HEAD
                  Image {
                      id:mapImage
                      width:parent.width-units.gu(1)
@@ -667,24 +614,7 @@ MainView {
                         anchors.fill: parent
                         onClicked:PopupUtils.open(popoverWithFlickable, overview)
                     }
-=======
-                     Button {
-                                         id: popoverWithFlickableButton
-                                         text: i18n.tr("flickable")
-                                         width: units.gu(16)
-                                         onClicked: PopupUtils.open(popoverWithFlickable, popoverWithFlickableButton)
-                                     }
-
-
-                 Image{
-                     id:mapImage
-                     width:parent.width-units.gu(1)
-                     anchors.horizontalCenter: parent.horizontalCenter
-                    fillMode: Image.PreserveAspectFit
-//                    source: "http://maps.googleapis.com/maps/api/staticmap?center=43.500752,16.273041&zoom=12&size=400x200&sensor=false"
-                    source:"staticmap.png"
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
-                 }
+                }
 
                  Row {
                      anchors.horizontalCenter: parent.horizontalCenter
@@ -1111,6 +1041,7 @@ MainView {
              }
 
         }
+
     }
 
 
@@ -1128,10 +1059,40 @@ MainView {
         id:weatherDetails
     }
 
+    //THIS CAN BE USED TO IMPORT GPX FILES
+    ListModel {
+        id:imported
+    }
+
+    XmlListModel {
+        id:gpx
+        //source:"endo.gpx"
+        query:"/gpx/trk/trkseg/trkpt"
+        namespaceDeclarations: "declare default element namespace \"http://www.topografix.com/GPX/1/1\";"
+        onStatusChanged: {
+                if (status === XmlListModel.Ready) {
+                    for (var i = 0; i < count; i++){
+                        imported.append({"lat": gpx.get(i).lat, "lon": gpx.get(i).lon, "time": gpx.get(i).time, "alt": gpx.get(i).alt})
+                    }
+                    Trailblazer.spinData();
+                }
+            }
+        XmlRole {name:"lat";query:"@lat/string()"}
+        XmlRole {name:"lon";query:"@lon/string()"}
+        XmlRole {name:"time";query:"time/string()"}
+        XmlRole {name:"alt";query:"ele/string()"}
+
+
+    }
+    //END OF GPX PART
+
     Item{
 
         //THIS LOADS WORKOUT HISTORY WHEN APP IS LOADED - COMPONENT IS root MainView
-        Component.onCompleted: Trailblazer.getHistory()
+        Component.onCompleted: {
+            Trailblazer.getHistory()
+            Trailblazer.getWeather();
+        }
     }
 
     PositionSource {
@@ -1146,12 +1107,12 @@ MainView {
 
             console.log("Speed is: " + Trailblazer.calculateDistance(last.lat, last.lon, gpsProvider.position.coordinate.latitude,gpsProvider.position.coordinate.longitude)/((gpsProvider.position.timestamp-last.time)/3600000) + " km/h");
 
-            distance.dist += Trailblazer.calculateDistance(last.lat, last.lon, gpsProvider.position.coordinate.latitude,gpsProvider.position.coordinate.longitude);
+            mainCircle.dist += Trailblazer.calculateDistance(last.lat, last.lon, gpsProvider.position.coordinate.latitude,gpsProvider.position.coordinate.longitude);
 
             if(gpsTrail.count > 2) if(gpsProvider.position.coordinate.distanceTo(last.lat, last.lon) > 0)console.log("DistanceTo() is working!!");
             //console.log("Accuracy: "+gpsProvider.position.coordinate.isValid);
 
-            if(gpsProvider.position.speedValid)currentSpeed.text=(gpsProvider.position.speed*3.6).toFixed(2)+"km/h";
+            //if(gpsProvider.position.speedValid)currentSpeed.text=(gpsProvider.position.speed*3.6).toFixed(2)+"km/h";
 
             var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
               db.transaction(

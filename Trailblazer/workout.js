@@ -33,13 +33,62 @@ function finish(){
     gpsProvider.stop()
     startButton.enabled=true
     startButton.text = "Start"
-    pauseButton.enabled=false
+    //pauseButton.enabled=false
     stopButton.enabled=false
 
     var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
     db.transaction(
                 function(tx) {
-                                    tx.executeSql('INSERT INTO Workout VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ distance.dist, duration.time, 10, weatherText.text, weatherImage.source, calories.text, new Date(), maxAltitude.text, 1.0, sportPopoverButton.text ]);
+                    tx.executeSql('INSERT INTO Workout VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ mainCircle.dist, mainCircle.time, 10, buttonWeather.text, buttonWeather.iconSource, caloriesBurnt.text, new Date(), maxSpeed.text, 1.0, sportPopoverButton.text ]);
+
+                                    var rs = tx.executeSql('SELECT * FROM Workout ORDER BY date DESC');
+
+                                    var r = "";
+                                    previousWorkouts.clear();
+
+                                    for(var i = 0; i < rs.rows.length; i++) {
+                                        previousWorkouts.append({"distance":rs.rows.item(i).distance, "duration":rs.rows.item(i).duration, "date":new Date(rs.rows.item(i).date).toLocaleDateString(), "time":new Date(rs.rows.item(i).date).toTimeString().split(" ")[0] , "weatherImage": rs.rows.item(i).weatherImage, "weather":rs.rows.item(i).weather, "calories":rs.rows.item(i).calories, "maxSpeed":rs.rows.item(i).maxSpeed, "sport":rs.rows.item(i).sport})
+                                    }
+                                }
+                       )
+
+    mainCircle.dist = 0.0
+    mainCircle.time = 0.0
+    startButton.text = "Start"
+}
+
+function add(date, sport, dist, dur, cal, wea){
+
+    if(new Date(date))date=new Date(date);
+    else date = new Date();
+
+    switch(sport){
+     case 0:
+        sport = "Mountain Biking"
+         break
+     case 1:
+        sport = "Cycling"
+         break
+     case 2:
+        sport = "Running"
+         break
+     case 3:
+        sport = "Walking"
+         break
+     default:
+        sport = ""
+         break
+    }
+
+    dur = parseInt(dur.split(":")[0])*3600 + parseInt(dur.split(":")[1])*60 + parseInt(dur.split(":")[2]);
+
+    if(cal)cal = cal + " kcal";
+    else cal="1000 kcal";
+
+    var db = LocalStorage.openDatabaseSync("Trailblazer", "1.0", "Trailblazer Workout Database", 1000000);
+    db.transaction(
+                function(tx) {
+                    tx.executeSql('INSERT INTO Workout VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [ dist, dur, 10, wea, buttonWeather.iconSource, cal, date, 10, 1.0, sport ]);
 
                                     var rs = tx.executeSql('SELECT * FROM Workout ORDER BY ROWID DESC');
 
@@ -51,12 +100,4 @@ function finish(){
                                     }
                                 }
                        )
-
-    distance.text = "0.0 km"
-    duration.text = "0:00:00 hours"
-    averageSpeed.text = "Avg Speed 0 km/h"
-    calories.text = "Calories Burned"
-    maxSpeed.text = "0.0 km/h"
-    currentSpeed.text = "0.0 km/h"
-    startButton.text = "Start"
 }

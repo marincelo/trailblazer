@@ -53,7 +53,6 @@ function getHistory(){
                                   }
                          )
 
-    getWeather();
     console.log("GPS active? " + gpsProvider.valid);//Return a message to the user if GPS is disabled
     console.log("GetHistory takes: "+(new Date().getTime()-start)+" ms")
 
@@ -66,13 +65,13 @@ function countCalories(){
     //TO-DO change MET values depending on AVG SPEED and (Max-Min) Altitude
 
     if(sp === "Mountain Biking")//MET = 8.5
-        return (8.5*weightSlider.value*duration.time/3600).toFixed(0) + " kcal"
+        return (8.5*weightSlider.value*mainCircle.time/3600).toFixed(0) + " kcal"
     else if(sp === "Running")
-        return (weightSlider.value*distance.dist).toFixed(0) + " kcal"
+        return (weightSlider.value*mainCircle.dist).toFixed(0) + " kcal"
     else if(sp === "Walking")
-        return (0.8*weightSlider.value*distance.dist).toFixed(0) + " kcal"
+        return (0.8*weightSlider.value*mainCircle.dist).toFixed(0) + " kcal"
     else if (sp === "Cycling")//MET = 12
-             return (12*weightSlider.value*duration.time/3600).toFixed(0) + " kcal"
+             return (12*weightSlider.value*mainCircle.time/3600).toFixed(0) + " kcal"
     else return "Choose Sport"
 }
 
@@ -81,9 +80,9 @@ function getWeather(){
 
     gpsProvider.update();
 
-    xhr.open("GET", "http://api.openweathermap.org/data/2.1/find/city?lat=" +gpsProvider.position.coordinate.latitude+ "&lon=" +gpsProvider.position.coordinate.longitude+ "&cnt=1&APPID=4cb86409f0202a6fba4ffea5058a5625", true);
+    xhr.open("GET", "http://api.openweathermap.org/data/2.1/find/city?lat=" +gpsProvider.position.coordinate.latitude.toFixed(6)+ "&lon=" +gpsProvider.position.coordinate.longitude.toFixed(6)+ "&cnt=1&APPID=4cb86409f0202a6fba4ffea5058a5625", true);
 
-    console.log("http://api.openweathermap.org/data/2.1/find/city?lat=" +gpsProvider.position.coordinate.latitude+ "&lon=" +gpsProvider.position.coordinate.longitude+ "&cnt=1");
+    console.log("http://api.openweathermap.org/data/2.1/find/city?lat=" +gpsProvider.position.coordinate.latitude.toFixed(6)+ "&lon=" +gpsProvider.position.coordinate.longitude.toFixed(6)+ "&cnt=1");
 
     xhr.onreadystatechange = function(){
         if(xhr.readyState == xhr.DONE && xhr.status == 200){
@@ -155,11 +154,7 @@ function getWeather(){
 
     }
 
-<<<<<<< HEAD
     //xhr.send();
-=======
-    xhr.send();
->>>>>>> c22fe5a2f8ea96ee5a07d5fa53fd30c8905d26fa
 }
 
 function calculateDistance(lat1, long1, lat2, long2){
@@ -175,4 +170,10 @@ function calculateDistance(lat1, long1, lat2, long2){
                       Math.cos(long2-long1)) * R;
     return d;
 
+}
+
+function spinData(){
+    for(var x =0;x<imported.count;x++)console.log(x + ": " +imported.get(x).lat + " - " + imported.get(x).lon + " : " + imported.get(x).alt + "m, at " + imported.get(x).time);
+
+    console.log("Counts" + imported.count);
 }

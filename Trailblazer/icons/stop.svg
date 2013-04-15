@@ -7,7 +7,6 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="32"
@@ -15,30 +14,17 @@
    id="svg3812"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="New document 5">
+   sodipodi:docname="stop.svg">
   <defs
      id="defs3814">
-    <linearGradient
+    <filter
        inkscape:collect="always"
-       id="linearGradient3824">
-      <stop
-         style="stop-color:#999999;stop-opacity:1;"
-         offset="0"
-         id="stop3826" />
-      <stop
-         style="stop-color:#999999;stop-opacity:0;"
-         offset="1"
-         id="stop3828" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3824"
-       id="linearGradient3830"
-       x1="11.383928"
-       y1="1019.8176"
-       x2="30.982143"
-       y2="1062.4515"
-       gradientUnits="userSpaceOnUse" />
+       id="filter3755">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.3125"
+         id="feGaussianBlur3757" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -48,7 +34,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.4"
-     inkscape:cx="19.673999"
+     inkscape:cx="11.816856"
      inkscape:cy="16.213994"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -66,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -76,7 +62,7 @@
      id="layer1"
      transform="translate(0,-1020.3622)">
     <rect
-       style="fill:url(#linearGradient3830);fill-opacity:1;stroke:none"
+       style="fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter3755)"
        id="rect3820"
        width="31.160715"
        height="31.339285"
